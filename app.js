@@ -6,7 +6,11 @@ var uiController = (function(){
       inputValue : '.add__value',
       addBtn : '.add__btn',
       incomeList : ".income__list",
-      expenseList : ".expenses__list"
+      expenseList : ".expenses__list",
+      tusuvLabel : ".budget__value",
+      incomeLabel : ".budget__income--value",
+      expenseLabel : ".budget__expenses--value",
+      percentageLabel : ".budget__expenses--percentage"
 
   };
   return{
@@ -30,9 +34,21 @@ var uiController = (function(){
             el.value = "";
         });
         fieldsArr[0].focus();
-        // for (var i = 0; i<fieldsArr.length; i++){
-        //     fieldsArr[i].value = "";
-        // }
+    
+    },
+
+    tusviigUzuuleh : function(tusuv){
+        document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
+        document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
+        document.querySelector(DOMstrings.expenseLabel).textContent = tusuv.totalExp;
+        
+        if(tusuv.huvi !== 0){
+            document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi +'%';
+        } else {
+            document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi;
+        }
+        
+
     },
 
     addListItem: function(item, type) {
@@ -41,11 +57,11 @@ var uiController = (function(){
       if (type === "inc") {
         list = DOMstrings.incomeList;
         html =
-          '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__delete">            <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div>        </div></div>';
+          '<div class="item clearfix" id="income-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       } else {
         list = DOMstrings.expenseList;
         html =
-          '<div class="item clearfix" id="expense-%id%"><div class="item__description">$$DESCRIPTION$$</div>          <div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn">                <i class="ion-ios-close-outline"></i></button></div></div></div>';
+          '<div class="item clearfix" id="expense-%id%"><div class="item__description">$$DESCRIPTION$$</div><div class="right clearfix"><div class="item__value">$$VALUE$$</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       }
       // Тэр HTML дотор орлого зарлагын  утгуудыг  REPLACE ашиглан 
       html = html.replace('%id%', item.id);
@@ -68,12 +84,13 @@ var financeController = (function() {
       
   var Expense = function (id, description, value){
       this.id = id;
-      this.descripton = description;
+      this.description = description;
       this.value = value;
   };
   var calculateTotal = function(type){
+      var sum = 0;
       data.items[type].forEach(function(el){
-          sum= sum + el.value;
+          sum = sum + el.value;
       });
       data.totals[type]= sum;
 
@@ -96,9 +113,9 @@ var financeController = (function() {
         calculateTotal('inc');
         calculateTotal('exp')
 
-        data.tusuv + data.totals.inc - data.totals.exp;
+        data.tusuv = data.totals.inc - data.totals.exp;
 
-        data.huvi =Math.round((data.totals.exp / data.totals.inc)*100);
+        data.huvi = Math.round((data.totals.exp / data.totals.inc)*100);
 
 
       },
@@ -107,7 +124,7 @@ var financeController = (function() {
             tusuv : data.tusuv,
             huvi : data.huvi,
             totalInc : data.totals.inc,
-            totalExp : data.total.exp   
+            totalExp : data.totals.exp   
         }
       },
       addItem :function(type, desc, val ){
@@ -154,7 +171,7 @@ var ctrlAddItem = function(){
         // Эцсийн үлдэгдэл
         var tusuv = financeController.tusviigAvah();
         //Төсвийг дэлгэцэнд гаргах
-        console.log(tusuv);
+        uiController.tusviigUzuuleh(tusuv);
  }
  // Олж авсан өгөгдлийг санхүүгийн контроллерт дамжуулж тэнд хадгална
  
@@ -178,6 +195,12 @@ var DOM = uiController.getDomstrings();
 return {
   init: function(){
       console.log('App starting...');
+    uiController.tusviigUzuuleh({
+        tusuv : 0,
+            huvi : 0,
+            totalInc : 0,
+            totalExp : 0
+    })
       setupEventListeners();
   }
 };
