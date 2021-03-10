@@ -12,7 +12,7 @@ var uiController = (function(){
               type : document.querySelector(DOMstrings.inputType).value,
               description : document.querySelector(DOMstrings.inputDescription).value,
               value : document.querySelector(DOMstrings.inputValue).value
-          }
+          };
       },
       getDomstrings: function(){
           return DOMstrings;
@@ -42,7 +42,7 @@ var financeController = (function() {
             inc : 0,
             exp : 0
         }
-    }
+    };
     return {
         addItem :function(type, desc, val ){
             var item, id;
@@ -58,19 +58,20 @@ var financeController = (function() {
                 item = new Expense(id, desc, val);
             }
            data.items[type].push(item);
+        },
+        seeData : function(){
+            return data;
         }
     };
 })();   
 
 // Программын холбогч контроллер
 var appController = (function(uiController, financeController){
-
-
-var ctrlAddItem =function(){
+var ctrlAddItem = function(){
   // Оруулах өгөгдлийг дэлгэцээс олж авна
    var input = uiController.getInput();
    // Олж авсан өгөгдлийг санхүүгийн контроллерт дамжуулж тэнд хадгална
-   financeController.addItem(input.type, input.description, input.value);
+   //  financeController.addItem(input.type, input.description, input.value);
 
    // Олж авсан өгөгдлийг вэб дээр  тохирох хэсэгт нь гаргана
    // Төсвийг тооцоолно.
@@ -87,9 +88,9 @@ var DOM =uiController.getDomstrings();
          
            document.addEventListener('keypress', function(event){
                if(event.keyCode === 13 || event.which === 13 ) {
-       ctrlAddItem();
+                ctrlAddItem();
                }
-           });
+    });
 };
 
 return {
@@ -97,8 +98,7 @@ return {
         console.log('App starting...');
         setupEventListeners();
     }
-
-}
+};
 
 })(uiController, financeController);   
 
