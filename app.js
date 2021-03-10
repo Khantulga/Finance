@@ -14,7 +14,7 @@ var uiController = (function(){
         return{
             type : document.querySelector(DOMstrings.inputType).value,
             description : document.querySelector(DOMstrings.inputDescription).value,
-            value : document.querySelector(DOMstrings.inputValue).value
+            value : parseInt(document.querySelector(DOMstrings.inputValue).value)
         };
     },
     getDomstrings: function(){
@@ -71,6 +71,14 @@ var financeController = (function() {
       this.descripton = description;
       this.value = value;
   };
+  var calculateTotal = function(type){
+      data.items[type].forEach(function(el){
+          sum= sum + el.value;
+      });
+      data.totals[type]= sum;
+
+  }
+
   var data = {
       items : {
           inc : [],
@@ -79,9 +87,29 @@ var financeController = (function() {
       totals : {
           inc : 0,
           exp : 0
-      }
+      },
+      tusuv : 0,
+      huvi : 0
   };
   return {
+      tusuvTootsooloh : function(){
+        calculateTotal('inc');
+        calculateTotal('exp')
+
+        data.tusuv + data.totals.inc - data.totals.exp;
+
+        data.huvi =Math.round((data.totals.exp / data.totals.inc)*100);
+
+
+      },
+      tusviigAvah : function(){
+        return {
+            tusuv : data.tusuv,
+            huvi : data.huvi,
+            totalInc : data.totals.inc,
+            totalExp : data.total.exp   
+        }
+      },
       addItem :function(type, desc, val ){
           var item, id;
           
@@ -110,18 +138,26 @@ var appController = (function(uiController, financeController){
 var ctrlAddItem = function(){
 // Оруулах өгөгдлийг дэлгэцээс олж авна
  var input = uiController.getInput();
- // Олж авсан өгөгдлийг санхүүгийн контроллерт дамжуулж тэнд хадгална
- var item = financeController.addItem(
-  input.type,
-  input.description,
-  input.value
-);
 
- // Олж авсан өгөгдлийг вэб дээр  тохирох хэсэгт нь гаргана
- uiController.addListItem(item, input.type);
- uiController.clearFields();
- // Төсвийг тооцоолно.
- // Эцсийн үлдэгдлийг дэлгэцэнд гаргах
+ if(input.description !== "" && input.value !== ""){
+    var item = financeController.addItem(
+        input.type,
+        input.description,
+        input.value
+      );
+      
+       // Олж авсан өгөгдлийг вэб дээр  тохирох хэсэгт нь гаргана
+       uiController.addListItem(item, input.type);
+       uiController.clearFields();
+       // Төсвийг тооцоолно.
+       financeController.tusuvTootsooloh();
+        // Эцсийн үлдэгдэл
+        var tusuv = financeController.tusviigAvah();
+        //Төсвийг дэлгэцэнд гаргах
+        console.log(tusuv);
+ }
+ // Олж авсан өгөгдлийг санхүүгийн контроллерт дамжуулж тэнд хадгална
+ 
 };
 
 var setupEventListeners = function(){
